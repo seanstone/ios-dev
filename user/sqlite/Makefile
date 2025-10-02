@@ -12,7 +12,7 @@ OBJ := $(patsubst %,build/%.o,$(SRC))
 
 CFLAGS += -Isqlite-amalgamation-$(SQLITE_VERSION)
 
-bin/sqlite3: $(OBJ)
+../bin/sqlite3: $(OBJ)
 	mkdir -p $(@D)
 	$(CC) $(CFLAGS) $^ -o $@
 
@@ -31,4 +31,5 @@ sqlite-amalgamation-$(SQLITE_VERSION).zip:
 
 .PHONY: clean
 clean:
-	rm -rf bin build sqlite-amalgamation-*
+	rm -rf bin build 
+# 	rm -rf sqlite-amalgamation-*

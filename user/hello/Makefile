@@ -6,7 +6,7 @@ export IOS_SYSCALLS_DIR = $(CURDIR)/../../toolchain/syscalls
 SRC := main.c
 OBJ := $(patsubst %,build/%.o,$(SRC))
 
-bin/hello: $(OBJ)
+../bin/hello: $(OBJ)
 	mkdir -p $(@D)
 	$(CC) $(CFLAGS) $^ -o $@
 

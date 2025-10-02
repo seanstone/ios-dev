@@ -14,11 +14,11 @@ build/%.c.o: %.c
 .PHONY: ipa
 ipa: app/export/ios-dev.ipa
 
-app/ios-dev.xcarchive: bin/libios-dev.a bin/hello
-	cd app && xcodebuild archive -scheme ios-dev -sdk iphoneos -allowProvisioningUpdates -archivePath ios-dev.xcarchive
+app/ios-dev.xcarchive: bin/libios-dev.a
+	xcodebuild archive -scheme ios-dev -sdk iphoneos -allowProvisioningUpdates -archivePath ios-dev.xcarchive
 
 app/export/ios-dev.ipa: app/ios-dev.xcarchive
-	cd app && xcodebuild -exportArchive -archivePath ios-dev.xcarchive -exportPath export -exportOptionsPlist ExportOptions.plist
+	xcodebuild -exportArchive -archivePath ios-dev.xcarchive -exportPath export -exportOptionsPlist ExportOptions.plist
 
 .PHONY: clean
 clean:

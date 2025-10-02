@@ -11,3 +11,7 @@ clean: clean-user clean-app
 .PHONY: clean-%
 clean-%:
 	$(MAKE) -C $* clean
+
+.PHONY: ipa
+ipa: all
+	$(MAKE) -C app ipa

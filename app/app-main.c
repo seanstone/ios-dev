@@ -162,7 +162,7 @@ void ios_main(const char* cache_dir, const char* bundle_dir, const char* framewo
     // Build source and destination paths
     char src[1024], dst[1024];
     const char *program = "sqlite3";
-    if (snprintf(src, sizeof(src), "%s/%s", bundle_dir, program) >= (int)sizeof(src) ||
+    if (snprintf(src, sizeof(src), "%s/bin/%s", bundle_dir, program) >= (int)sizeof(src) ||
         snprintf(dst, sizeof(dst), "%s/%s", cache_dir, program) >= (int)sizeof(dst)) {
         fprintf(stderr, "Path too long\n");
         return;

@@ -9,4 +9,5 @@ build-%:
 clean: clean-hello clean-sqlite
 
 clean-%:
+	rm -rf bin
 	$(MAKE) -C $* clean
