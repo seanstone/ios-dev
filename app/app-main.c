@@ -73,6 +73,12 @@ void ios_main(const char* cache_dir, const char* bundle_dir, const char* framewo
     strcat(path, "/");
     strcat(path, program);
 
+    // Set permissions
+    if (chmod(path, 0755) != 0) {
+        perror("chmod failed");
+    }
+    else printf("Permissions changed successfully\n");
+
     // Arguments (argv[0] is conventionally the program name)
     char *args[] = { program, NULL };
 
