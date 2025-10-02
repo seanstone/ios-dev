@@ -43,7 +43,7 @@ for a in "$@"; do
 done
 
 # --- Base compile flags ---
-BASE_CFLAGS=( -target arm64-apple-ios -isysroot "$SDK" -fPIC )
+BASE_CFLAGS=( -fPIC )
 if [[ -n "${IOS_SYSCALLS_DIR}" ]]; then
   BASE_CFLAGS+=( -include "${IOS_SYSCALLS_DIR}/ios_syscalls.h" )
 fi
@@ -89,7 +89,7 @@ SYSCALLS_H="${IOS_SYSCALLS_DIR}/ios_syscalls.h"
 if [[ -n "${IOS_SYSCALLS_DIR}" && -f "$SYSCALLS_C" && -f "$SYSCALLS_H" ]]; then
   SYSCALLS_OBJ="${TMPDIR%/}/ios_syscalls.o"
   if [[ ! -f "$SYSCALLS_OBJ" || "$SYSCALLS_C" -nt "$SYSCALLS_OBJ" || "$SYSCALLS_H" -nt "$SYSCALLS_OBJ" ]]; then
-    "$CCBIN" -target arm64-apple-ios -isysroot "$SDK" -fPIC -c "$SYSCALLS_C" -o "$SYSCALLS_OBJ"
+    "$CCBIN" -fPIC -c "$SYSCALLS_C" -o "$SYSCALLS_OBJ"
   fi
 fi
 
@@ -102,25 +102,9 @@ fi
 
 # --- Post-link patch step (turn MH_EXECUTE -> MH_DYLIB or MH_BUNDLE) ---
 # We patch the just-linked 'out_file' into 'patched_out' and sign that.
-patched_out=""
-if (( PATCH_ENABLED )); then
-  if [[ -z "${out_file}" ]]; then
-    echo "❌ Cannot run patch: output file not detected (-o missing)."
-    exit 2
-  fi
-  if [[ ! -x "${PATCH_SCRIPT}" && ! -f "${PATCH_SCRIPT}" ]]; then
-    echo "❌ PATCH_SCRIPT not found: ${PATCH_SCRIPT}"
-    exit 2
-  fi
-  patched_out="${out_file}${PATCHED_SUFFIX}"
-  if (( PATCH_TO_BUNDLE )); then
-    python3 "${PATCH_SCRIPT}" "${out_file}" "${patched_out}" --to-bundle
-  else
-    python3 "${PATCH_SCRIPT}" "${out_file}" "${patched_out}"
-  fi
-else
-  patched_out="${out_file}"
-fi
+patched_out="${out_file}"
+python3 "${SCRIPT_DIR}/patch_macho.py" "${out_file}" "${patched_out}"
+python3 "${SCRIPT_DIR}/patch_to_ios.py" "${patched_out}" -o "${patched_out}"
 
 # --- Codesign the final artifact (patched_out) ---
 if [[ "${CODESIGN_ALLOWED}" == "YES" ]] && [[ -n "${patched_out}" ]]; then
