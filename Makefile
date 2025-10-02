@@ -5,8 +5,8 @@ IOS_SDK = $(shell xcrun --sdk iphoneos --show-sdk-path)
 
 bin/libios-env.a:
 	mkdir -p $(@D)
-	clang -c -arch arm64 -isysroot "$(IOS_SDK)" -c app/ios-env.c -o bin/ios-env.o
-	ar rcs $@ bin/ios-env.o
+	clang -c -arch arm64 -isysroot "$(IOS_SDK)" -c app/app-main.c -o bin/app-main.o
+	ar rcs $@ bin/app-main.o
 
 bin/hello: hello/main.c
 	mkdir -p $(@D)
