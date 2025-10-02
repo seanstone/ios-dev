@@ -13,7 +13,7 @@ bin/libios-dev.a: app/app-main.c
 bin/hello: hello/main.c
 	mkdir -p $(@D)
 	clang -target arm64-apple-ios -isysroot $(IOS_SDK) -dynamiclib $^ -o $@
-	codesign --force --sign $(ID) \
+	codesign --force --sign $(EXPANDED_CODE_SIGN_IDENTITY) \
 		--options runtime \
 		--timestamp=none \
 		--preserve-metadata=identifier,flags \
