@@ -1,5 +1,5 @@
 .PHONY: default
-default: bin/libios-env.a bin/hello
+default: app/export/ios-env.ipa
 
 IOS_SDK = "$(shell xcrun --sdk iphoneos --show-sdk-path)"
 ID = "Apple Development: En Shih (8JAX23HR7H)"
@@ -18,6 +18,12 @@ bin/hello: hello/main.c
 		--preserve-metadata=identifier,flags \
 		$@
 
+app/ios-env.xcarchive: bin/libios-env.a bin/hello
+	cd app && xcodebuild archive -scheme ios-env -sdk iphoneos -allowProvisioningUpdates -archivePath ios-env.xcarchive
+
+app/export/ios-env.ipa: app/ios-env.xcarchive
+	cd app && xcodebuild -exportArchive -archivePath ios-env.xcarchive -exportPath export -exportOptionsPlist ExportOptions.plist
+
 .PHONY: clean
 clean:
-	rm -rf bin
+	rm -rf bin app/*.xcarchive app/export
