@@ -4,3 +4,6 @@ DerivedData/
 .DS_Store
 *.xcarchive/
 export/
+*.zip
+sqlite-amalgamation-*
+build/

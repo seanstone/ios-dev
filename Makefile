@@ -5,14 +5,17 @@ include id.mk
 
 CC = $(CURDIR)/ios-cc
 
-bin/libios-dev.a: app/app-main.c
+bin/libios-dev.a: build/app/app-main.c.o
 	mkdir -p $(@D)
-	$(CC) -c $< -o bin/app-main.o
-	ar rcs $@ bin/app-main.o
+	ar rcs $@ $^
 
-bin/hello: hello/main.c
+bin/hello: build/hello/main.c.o
 	mkdir -p $(@D)
-	$(CC) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@
+
+build/%.c.o: %.c
+	mkdir -p $(@D)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 .PHONY: ipa
 ipa: app/export/ios-dev.ipa
@@ -25,4 +28,6 @@ app/export/ios-dev.ipa: app/ios-dev.xcarchive
 
 .PHONY: clean
 clean:
-	rm -rf bin app/*.xcarchive app/export
+	rm -rf bin build app/*.xcarchive app/export
+
+include sqlite.mk
