@@ -105,7 +105,7 @@
 					};
 				};
 			};
-			buildConfigurationList = A56012C12E8E8C32001BBC51 /* Build configuration list for PBXProject "ios-env" */;
+			buildConfigurationList = A56012C12E8E8C32001BBC51 /* Build configuration list for PBXProject "ios-dev" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -342,7 +342,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A56012C12E8E8C32001BBC51 /* Build configuration list for PBXProject "ios-env" */ = {
+		A56012C12E8E8C32001BBC51 /* Build configuration list for PBXProject "ios-dev" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A56012CF2E8E8C36001BBC51 /* Debug */,

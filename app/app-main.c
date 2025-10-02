@@ -105,6 +105,56 @@ static int ios_execv(const char *path, char *const argv[])
     return rc;
 }
 
+static int list_dir(const char *target_dir)
+{
+    DIR *dir = opendir(target_dir);
+    if (dir == NULL) {
+        fprintf(stderr, "Failed to open dir: %s (error: %s)\n", target_dir, strerror(errno));
+        return -1;
+    }
+
+    printf("Contents of %s:\n", target_dir);
+
+    for (;;) {
+        errno = 0; // so we can detect readdir errors
+        struct dirent *entry = readdir(dir);
+        if (entry == NULL) {
+            if (errno != 0) {
+                fprintf(stderr, "readdir error: %s\n", strerror(errno));
+                closedir(dir);
+                return -1;
+            }
+            break; // end of directory
+        }
+
+        // Build full path safely
+        char fullpath[1024];
+        int n = snprintf(fullpath, sizeof(fullpath), "%s/%s", target_dir, entry->d_name);
+        if (n < 0 || (size_t)n >= sizeof(fullpath)) {
+            fprintf(stderr, "  [name too long]: %s/%s\n", target_dir, entry->d_name);
+            continue;
+        }
+
+        // Stat the entry
+        struct stat st;
+        if (stat(fullpath, &st) == -1) {
+            fprintf(stderr, "  %-20s [stat error: %s]\n", entry->d_name, strerror(errno));
+            continue;
+        }
+
+        // Print permissions and name
+        print_permissions(st.st_mode);
+        printf("  %s\n", entry->d_name);
+    }
+
+    if (closedir(dir) == -1) {
+        fprintf(stderr, "closedir error: %s\n", strerror(errno));
+        return -1;
+    }
+
+    return 0;
+}
+
 void ios_main(const char* cache_dir, const char* bundle_dir, const char* frameworks_dir)
 {
     (void)frameworks_dir;
@@ -118,12 +168,16 @@ void ios_main(const char* cache_dir, const char* bundle_dir, const char* framewo
         return;
     }
 
+    list_dir(bundle_dir);
+
     // Copy program
     if (copy_file(src, dst) != 0) {
         fprintf(stderr, "Failed to copy %s to cache\n", program);
         return;
     }
     printf("Copied %s to %s\n", src, dst);
+
+    list_dir(cache_dir);
 
     // argv[0] is program name
     char *args[] = { (char*)program, NULL };
