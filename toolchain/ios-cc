@@ -4,12 +4,20 @@ set -euo pipefail
 # --- Config / defaults ---
 SDK="${IOS_SDK:-$(xcrun --sdk iphoneos --show-sdk-path)}"
 CCBIN="${CCBIN:-clang}"
-DYLIB_NAME="${DYLIB_NAME:-a.out.dylib}"   # used for install_name only
 
-# Generic iOS "unavailable" shims (optional)
+# --- Locate our own directory ---
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# iOS syscall shims (optional)
 IOS_SYSCALLS_DIR="${IOS_SYSCALLS_DIR:-}"            # folder containing ios_syscalls.{h,c}
 
-# Codesign controls
+# Patch controls
+PATCH_SCRIPT="${PATCH_SCRIPT:-${SCRIPT_DIR}/patch_macho.py}"
+PATCH_ENABLED="${PATCH_ENABLED:-1}"                  # set 0 to skip patching
+PATCH_TO_BUNDLE="${PATCH_TO_BUNDLE:-0}"              # set 1 to patch MH_BUNDLE instead of MH_DYLIB
+PATCHED_SUFFIX="${PATCHED_SUFFIX:-}"         # output suffix for patched file
+
+# Codesign controls (we sign the final artifact; patching invalidates signatures)
 CODESIGN_ALLOWED="${CODESIGN_ALLOWED:-YES}"
 ADHOC="${ADHOC:-0}"
 CODESIGN_FLAGS="${CODESIGN_FLAGS:---timestamp=none --preserve-metadata=identifier,flags}"
@@ -28,22 +36,28 @@ out_file=""
 prev=""
 for a in "$@"; do
   [[ "$a" == "-c" ]] && is_compile=1
-  [[ "$prev" == "-o" ]] && out_file="$a"
+  if [[ "$prev" == "-o" ]]; then
+    out_file="$a"
+  fi
   prev="$a"
 done
 
 # --- Base compile flags ---
-BASE_CFLAGS=( -target arm64-apple-ios -isysroot "$SDK" -fPIC -include "${IOS_SYSCALLS_DIR}/ios_syscalls.h" )
+BASE_CFLAGS=( -target arm64-apple-ios -isysroot "$SDK" -fPIC )
+if [[ -n "${IOS_SYSCALLS_DIR}" ]]; then
+  BASE_CFLAGS+=( -include "${IOS_SYSCALLS_DIR}/ios_syscalls.h" )
+fi
 
 # Build ARGS from base flags + caller args
 ARGS=( "${BASE_CFLAGS[@]}" "$@" )
 
+# --- Pure compile step passthrough ---
 if (( is_compile )); then
   exec "$CCBIN" "${ARGS[@]}"
 fi
 
-# --- Link step: ALWAYS produce a dylib ---
-# Remove conflicting kind flags if caller added them (e.g., -bundle)
+# --- Link step: ALWAYS produce a normal executable (MH_EXECUTE) ---
+# Strip kind flags that fight with an executable
 FILTERED_ARGS=()
 skip_next=0
 prev=""
@@ -54,35 +68,25 @@ for a in "$@"; do
     continue
   fi
   case "$a" in
-    -bundle)        ;;                         # drop
-    -shared)        ;;                         # drop (clang accepts -shared, but we force -dynamiclib)
-    -Wl,-pie|-pie)  ;;                         # drop (not for dylibs)
+    -dynamiclib|-bundle|-shared) ;;            # drop dylib/bundle requests
+    -Wl,-dylib*)                 ;;            # drop any dylib-ish linker flags
+    -install_name) skip_next=1 ;;              # drop install_name and its value
+    -Wl,-pie|-pie) ;;                           # we'll add PIE explicitly below
     *) FILTERED_ARGS+=( "$a" );;
   esac
   prev="$a"
 done
 ARGS=( "${BASE_CFLAGS[@]}" "${FILTERED_ARGS[@]}" )
 
-# Add dylib flags; avoid duplicate -install_name if caller set it
-saw_install_name=0
-prev=""
-for a in "${FILTERED_ARGS[@]}"; do
-  [[ "$a" == "-install_name" ]] && saw_install_name=1
-done
+# Ensure PIE & sane defaults for iOS executables
+EXEC_LINK_FLAGS=( -Wl,-pie )
 
-declare -a LINK_FLAGS=()
-LINK_FLAGS+=( -dynamiclib )
-if (( ! saw_install_name )); then
-  LINK_FLAGS+=( -install_name "@rpath/${DYLIB_NAME}" )
-fi
-LINK_FLAGS+=( -current_version 1.0 -compatibility_version 1.0 )
-
-# If shims are enabled, compile the shim C once to a temp .o and inject it
+# Optional: compile syscall shim once and include if present
 TMPDIR="${TMPDIR:-/tmp}"
 SYSCALLS_OBJ=""
 SYSCALLS_C="${IOS_SYSCALLS_DIR}/ios_syscalls.c"
 SYSCALLS_H="${IOS_SYSCALLS_DIR}/ios_syscalls.h"
-if [[ -f "$SYSCALLS_C" && -f "$SYSCALLS_H" ]]; then
+if [[ -n "${IOS_SYSCALLS_DIR}" && -f "$SYSCALLS_C" && -f "$SYSCALLS_H" ]]; then
   SYSCALLS_OBJ="${TMPDIR%/}/ios_syscalls.o"
   if [[ ! -f "$SYSCALLS_OBJ" || "$SYSCALLS_C" -nt "$SYSCALLS_OBJ" || "$SYSCALLS_H" -nt "$SYSCALLS_OBJ" ]]; then
     "$CCBIN" -target arm64-apple-ios -isysroot "$SDK" -fPIC -c "$SYSCALLS_C" -o "$SYSCALLS_OBJ"
@@ -91,27 +95,55 @@ fi
 
 # Perform the link (include shim object if present)
 if [[ -n "$SYSCALLS_OBJ" && -f "$SYSCALLS_OBJ" ]]; then
-  "$CCBIN" "${ARGS[@]}" "${LINK_FLAGS[@]}" "$SYSCALLS_OBJ"
+  "$CCBIN" "${ARGS[@]}" "${EXEC_LINK_FLAGS[@]}" "$SYSCALLS_OBJ"
 else
-  "$CCBIN" "${ARGS[@]}" "${LINK_FLAGS[@]}"
+  "$CCBIN" "${ARGS[@]}" "${EXEC_LINK_FLAGS[@]}"
 fi
 
-# --- Post-link codesign (when we know the output path) ---
-if [[ "${CODESIGN_ALLOWED}" == "YES" ]] && [[ -n "${out_file}" ]]; then
+# --- Post-link patch step (turn MH_EXECUTE -> MH_DYLIB or MH_BUNDLE) ---
+# We patch the just-linked 'out_file' into 'patched_out' and sign that.
+patched_out=""
+if (( PATCH_ENABLED )); then
+  if [[ -z "${out_file}" ]]; then
+    echo "❌ Cannot run patch: output file not detected (-o missing)."
+    exit 2
+  fi
+  if [[ ! -x "${PATCH_SCRIPT}" && ! -f "${PATCH_SCRIPT}" ]]; then
+    echo "❌ PATCH_SCRIPT not found: ${PATCH_SCRIPT}"
+    exit 2
+  fi
+  patched_out="${out_file}${PATCHED_SUFFIX}"
+  if (( PATCH_TO_BUNDLE )); then
+    python3 "${PATCH_SCRIPT}" "${out_file}" "${patched_out}" --to-bundle
+  else
+    python3 "${PATCH_SCRIPT}" "${out_file}" "${patched_out}"
+  fi
+else
+  patched_out="${out_file}"
+fi
+
+# --- Codesign the final artifact (patched_out) ---
+if [[ "${CODESIGN_ALLOWED}" == "YES" ]] && [[ -n "${patched_out}" ]]; then
   if [[ -n "${CODESIGN_IDENTITY:-}" ]]; then
     /usr/bin/codesign --force --sign "${CODESIGN_IDENTITY}" ${CODESIGN_FLAGS} \
       ${ENTITLEMENTS:+--entitlements "$ENTITLEMENTS"} \
-      "$out_file"
+      "${patched_out}"
   else
     if (( IS_SIM )) || (( ADHOC )); then
       /usr/bin/codesign --force --sign - ${CODESIGN_FLAGS} \
         ${ENTITLEMENTS:+--entitlements "$ENTITLEMENTS"} \
-        "$out_file"
+        "${patched_out}"
     else
       echo "⚠️  Skipping codesign: no CODESIGN_IDENTITY and not Simulator (set ADHOC=1 to force)."
     fi
   fi
 else
-  [[ -z "${out_file}" ]] && echo "⚠️  Skipping codesign: could not detect output file (-o missing)."
+  [[ -z "${patched_out}" ]] && echo "⚠️  Skipping codesign: patched output not determined."
   [[ "${CODESIGN_ALLOWED}" != "YES" ]] && echo "ℹ️  Codesign disabled (CODESIGN_ALLOWED=${CODESIGN_ALLOWED})."
+fi
+
+# Final note
+echo "✅ Built executable: ${out_file}"
+if (( PATCH_ENABLED )); then
+  echo "✅ Patched to:      ${patched_out}"
 fi
