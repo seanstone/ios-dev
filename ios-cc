@@ -7,7 +7,7 @@ CCBIN="${CCBIN:-clang}"
 DYLIB_NAME="${DYLIB_NAME:-a.out.dylib}"   # used for install_name only
 
 # Generic iOS "unavailable" shims (optional)
-IOS_SHIMS_ENABLE="${IOS_SHIMS_ENABLE:-0}"     # set to 1 to activate shims
+IOS_SHIMS_ENABLE="${IOS_SHIMS_ENABLE:-1}"     # set to 1 to activate shims
 IOS_SHIMS_DIR="${IOS_SHIMS_DIR:-}"            # folder containing ios_unavailable_shims.{h,c}
 
 # Codesign controls
