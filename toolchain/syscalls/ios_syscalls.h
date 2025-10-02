@@ -9,9 +9,9 @@
 extern "C" {
 #endif
 
-int   ios_shim_system(const char *cmd);
-FILE* ios_shim_popen (const char *cmd, const char *mode);
-int   ios_shim_pclose(FILE *stream);
+int   ios_system(const char *cmd);
+FILE* ios_popen (const char *cmd, const char *mode);
+int   ios_pclose(FILE *stream);
 
 #ifdef __cplusplus
 }
@@ -19,13 +19,13 @@ int   ios_shim_pclose(FILE *stream);
 
 #ifdef __APPLE__
   #undef system
-  #define system ios_shim_system
+  #define system ios_system
 
   #undef popen
-  #define popen ios_shim_popen
+  #define popen ios_popen
   
   #undef pclose
-  #define pclose ios_shim_pclose
+  #define pclose ios_pclose
 #endif
 
 #endif
