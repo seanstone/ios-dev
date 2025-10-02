@@ -8,10 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		A5331E102E8E98BA00B1767A /* libios-env.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A5331E022E8E938900B1767A /* libios-env.a */; };
+		A5331E122E8E9A5A00B1767A /* hello in Resources */ = {isa = PBXBuildFile; fileRef = A5331E112E8E9A5A00B1767A /* hello */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		A5331E022E8E938900B1767A /* libios-env.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libios-env.a"; path = "../bin/libios-env.a"; sourceTree = "<group>"; };
+		A5331E112E8E9A5A00B1767A /* hello */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = hello; path = ../bin/hello; sourceTree = SOURCE_ROOT; };
 		A56012C62E8E8C32001BBC51 /* ios-env.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ios-env.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -49,6 +51,7 @@
 				A56012C82E8E8C32001BBC51 /* ios-env */,
 				A5331E012E8E938900B1767A /* Frameworks */,
 				A56012C72E8E8C32001BBC51 /* Products */,
+				A5331E112E8E9A5A00B1767A /* hello */,
 			);
 			sourceTree = "<group>";
 		};
@@ -124,6 +127,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A5331E122E8E9A5A00B1767A /* hello in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
