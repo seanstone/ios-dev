@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mkdir -p ./user/bin/
+
 cp /opt/homebrew/opt/openssl@3/lib/libssl.3.dylib ./user/bin/libssl.3.dylib
 ./toolchain/patch_to_ios.py ./user/bin/libssl.3.dylib -o ./user/bin/libssl.3.dylib.1
 rm -f ./user/bin/libssl.3.dylib
@@ -17,6 +19,7 @@ mv ./user/bin/libminizip.1.dylib.1 ./user/bin/libminizip.1.dylib
 
 ./toolchain/patch_macho.py ./zsign/bin/zsign ./user/bin/zsign
 ./toolchain/patch_to_ios.py ./user/bin/zsign -o ./user/bin/zsign
+./toolchain/patch_add_syslog_shim.py ./user/bin/libcrypto.3.dylib ./user/bin/libcrypto.3.dylib
 
 install_name_tool -change \
   /opt/homebrew/opt/openssl@3/lib/libssl.3.dylib \
