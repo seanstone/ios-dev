@@ -7,6 +7,35 @@
 #include <sys/stat.h>  // stat, fchmod
 #include <dlfcn.h>     // dlopen, dlsym, dlerror, dlclose
 
+static void print_permissions(mode_t mode)
+{
+    char perms[11];
+
+    // File type
+    if (S_ISDIR(mode)) perms[0] = 'd';
+    else if (S_ISLNK(mode)) perms[0] = 'l';
+    else perms[0] = '-';
+
+    // Owner
+    perms[1] = (mode & S_IRUSR) ? 'r' : '-';
+    perms[2] = (mode & S_IWUSR) ? 'w' : '-';
+    perms[3] = (mode & S_IXUSR) ? 'x' : '-';
+
+    // Group
+    perms[4] = (mode & S_IRGRP) ? 'r' : '-';
+    perms[5] = (mode & S_IWGRP) ? 'w' : '-';
+    perms[6] = (mode & S_IXGRP) ? 'x' : '-';
+
+    // Others
+    perms[7] = (mode & S_IROTH) ? 'r' : '-';
+    perms[8] = (mode & S_IWOTH) ? 'w' : '-';
+    perms[9] = (mode & S_IXOTH) ? 'x' : '-';
+
+    perms[10] = '\0';
+
+    printf("%s", perms);
+}
+
 static int copy_file(const char *src, const char *dst)
 {
     int in = open(src, O_RDONLY);
