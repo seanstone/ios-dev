@@ -7,8 +7,7 @@ CCBIN="${CCBIN:-clang}"
 DYLIB_NAME="${DYLIB_NAME:-a.out.dylib}"   # used for install_name only
 
 # Generic iOS "unavailable" shims (optional)
-IOS_SHIMS_ENABLE="${IOS_SHIMS_ENABLE:-1}"     # set to 1 to activate shims
-IOS_SHIMS_DIR="${IOS_SHIMS_DIR:-}"            # folder containing ios_unavailable_shims.{h,c}
+IOS_SYSCALLS_DIR="${IOS_SYSCALLS_DIR:-}"            # folder containing ios_syscalls.{h,c}
 
 # Codesign controls
 CODESIGN_ALLOWED="${CODESIGN_ALLOWED:-YES}"
@@ -34,12 +33,7 @@ for a in "$@"; do
 done
 
 # --- Base compile flags ---
-BASE_CFLAGS=( -target arm64-apple-ios -isysroot "$SDK" -fPIC )
-
-# Optional: force-include shims header on compile steps
-if (( IOS_SHIMS_ENABLE )) && [[ -n "${IOS_SHIMS_DIR}" ]]; then
-  BASE_CFLAGS+=( -include "${IOS_SHIMS_DIR}/ios_unavailable_shims.h" )
-fi
+BASE_CFLAGS=( -target arm64-apple-ios -isysroot "$SDK" -fPIC -include "${IOS_SYSCALLS_DIR}/ios_syscalls.h" )
 
 # Build ARGS from base flags + caller args
 ARGS=( "${BASE_CFLAGS[@]}" "$@" )
@@ -85,21 +79,19 @@ LINK_FLAGS+=( -current_version 1.0 -compatibility_version 1.0 )
 
 # If shims are enabled, compile the shim C once to a temp .o and inject it
 TMPDIR="${TMPDIR:-/tmp}"
-SHIM_OBJ=""
-if (( IOS_SHIMS_ENABLE )) && [[ -n "${IOS_SHIMS_DIR}" ]]; then
-  SHIM_C="${IOS_SHIMS_DIR}/ios_unavailable_shims.c"
-  SHIM_H="${IOS_SHIMS_DIR}/ios_unavailable_shims.h"
-  if [[ -f "$SHIM_C" && -f "$SHIM_H" ]]; then
-    SHIM_OBJ="${TMPDIR%/}/ios_unavailable_shims.o"
-    if [[ ! -f "$SHIM_OBJ" || "$SHIM_C" -nt "$SHIM_OBJ" || "$SHIM_H" -nt "$SHIM_OBJ" ]]; then
-      "$CCBIN" -target arm64-apple-ios -isysroot "$SDK" -fPIC -c "$SHIM_C" -o "$SHIM_OBJ"
-    fi
+SYSCALLS_OBJ=""
+SYSCALLS_C="${IOS_SYSCALLS_DIR}/ios_syscalls.c"
+SYSCALLS_H="${IOS_SYSCALLS_DIR}/ios_syscalls.h"
+if [[ -f "$SYSCALLS_C" && -f "$SYSCALLS_H" ]]; then
+  SYSCALLS_OBJ="${TMPDIR%/}/ios_syscalls.o"
+  if [[ ! -f "$SYSCALLS_OBJ" || "$SYSCALLS_C" -nt "$SYSCALLS_OBJ" || "$SYSCALLS_H" -nt "$SYSCALLS_OBJ" ]]; then
+    "$CCBIN" -target arm64-apple-ios -isysroot "$SDK" -fPIC -c "$SYSCALLS_C" -o "$SYSCALLS_OBJ"
   fi
 fi
 
 # Perform the link (include shim object if present)
-if [[ -n "$SHIM_OBJ" && -f "$SHIM_OBJ" ]]; then
-  "$CCBIN" "${ARGS[@]}" "${LINK_FLAGS[@]}" "$SHIM_OBJ"
+if [[ -n "$SYSCALLS_OBJ" && -f "$SYSCALLS_OBJ" ]]; then
+  "$CCBIN" "${ARGS[@]}" "${LINK_FLAGS[@]}" "$SYSCALLS_OBJ"
 else
   "$CCBIN" "${ARGS[@]}" "${LINK_FLAGS[@]}"
 fi

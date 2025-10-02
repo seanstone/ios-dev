@@ -1,13 +1,12 @@
 .PHONY: all
-all: build-app build-user
+all: build-hello build-sqlite
 
 .PHONY: build-%
 build-%:
 	$(MAKE) -C $*
 
 .PHONY: clean
-clean: clean-user clean-app
+clean: clean-hello clean-sqlite
 
-.PHONY: clean-%
 clean-%:
 	$(MAKE) -C $* clean

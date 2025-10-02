@@ -1,7 +1,7 @@
-include ../id.mk
-export CC = $(CURDIR)/../ios-cc
-export CXX = $(CURDIR)/../ios-cc
-export IOS_SHIMS_DIR = $(CURDIR)/../shims
+include ../../toolchain/id.mk
+export CC = $(CURDIR)/../../toolchain/ios-cc
+export CXX = $(CURDIR)/../../toolchain/ios-cc
+export IOS_SYSCALLS_DIR = $(CURDIR)/../../toolchain/syscalls
 
 SRC := main.c
 OBJ := $(patsubst %,build/%.o,$(SRC))

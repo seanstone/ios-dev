@@ -1,5 +1,5 @@
-#ifndef IOS_UNAVAILABLE_SHIMS_H
-#define IOS_UNAVAILABLE_SHIMS_H
+#ifndef IOS_SYSCALLS_H
+#define IOS_SYSCALLS_H
 
 #include <stdlib.h>
 #include <stdio.h>

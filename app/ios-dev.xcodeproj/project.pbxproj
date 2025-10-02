@@ -289,7 +289,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../bin";
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/bin";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "tw.ensh.ios-dev";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -325,7 +325,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../bin";
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/bin";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "tw.ensh.ios-dev";
 				PRODUCT_NAME = "$(TARGET_NAME)";
