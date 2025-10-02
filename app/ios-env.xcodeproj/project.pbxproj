@@ -8,12 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		A5331E102E8E98BA00B1767A /* libios-env.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A5331E022E8E938900B1767A /* libios-env.a */; };
+		A5FC85472E8EB13600BF2346 /* hello in Resources */ = {isa = PBXBuildFile; fileRef = A5FC85462E8EB13600BF2346 /* hello */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		A5331E022E8E938900B1767A /* libios-env.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libios-env.a"; path = "../bin/libios-env.a"; sourceTree = "<group>"; };
 		A56012C62E8E8C32001BBC51 /* ios-env.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ios-env.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5FC85412E8EA3E000BF2346 /* hello */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = hello; path = ../bin/hello; sourceTree = "<group>"; };
+		A5FC85462E8EB13600BF2346 /* hello */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = hello; path = ../bin/hello; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -48,6 +50,7 @@
 		A56012BD2E8E8C32001BBC51 = {
 			isa = PBXGroup;
 			children = (
+				A5FC85462E8EB13600BF2346 /* hello */,
 				A56012C82E8E8C32001BBC51 /* ios-env */,
 				A5331E012E8E938900B1767A /* Frameworks */,
 				A56012C72E8E8C32001BBC51 /* Products */,
@@ -72,7 +75,6 @@
 				A56012C22E8E8C32001BBC51 /* Sources */,
 				A56012C32E8E8C32001BBC51 /* Frameworks */,
 				A56012C42E8E8C32001BBC51 /* Resources */,
-				A5331E132E8EA01E00B1767A /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -127,31 +129,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A5FC85472E8EB13600BF2346 /* hello in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		A5331E132E8EA01E00B1767A /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nDST_DIR=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\nDST_BIN=\"${DST_DIR}/hello\"\nmkdir -p \"${DST_DIR}\"\ncp \"${PROJECT_DIR}/../bin/hello\" \"${DST_BIN}\"\n\n# 🔏 Codesign.\nif [[ -n \"${EXPANDED_CODE_SIGN_IDENTITY:-}\" && \"${CODE_SIGNING_ALLOWED:-NO}\" == \"YES\" ]]; then\n  echo \"🔏 Codesigning ${DST_BIN}\"\n  /usr/bin/codesign --force --sign \"${EXPANDED_CODE_SIGN_IDENTITY}\" \\\n    --timestamp=none --preserve-metadata=identifier,entitlements,flags \\\n    \"${DST_BIN}\"\nelse\n  echo \"⚠️ Skipping codesign (no identity or code signing disabled).\"\nfi\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A56012C22E8E8C32001BBC51 /* Sources */ = {
