@@ -6,7 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A5331E102E8E98BA00B1767A /* libios-env.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A5331E022E8E938900B1767A /* libios-env.a */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		A5331E022E8E938900B1767A /* libios-env.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libios-env.a"; path = "../bin/libios-env.a"; sourceTree = "<group>"; };
 		A56012C62E8E8C32001BBC51 /* ios-env.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ios-env.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -23,16 +28,26 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A5331E102E8E98BA00B1767A /* libios-env.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A5331E012E8E938900B1767A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A5331E022E8E938900B1767A /* libios-env.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		A56012BD2E8E8C32001BBC51 = {
 			isa = PBXGroup;
 			children = (
 				A56012C82E8E8C32001BBC51 /* ios-env */,
+				A5331E012E8E938900B1767A /* Frameworks */,
 				A56012C72E8E8C32001BBC51 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -265,10 +280,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../bin";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "tw.ensh.ios-env";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
@@ -296,10 +315,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../bin";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "tw.ensh.ios-env";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
