@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/stat.h>   // stat()
+#include <dlfcn.h>
 
 static void print_permissions(mode_t mode)
 {
@@ -73,22 +74,13 @@ void ios_main(const char* cache_dir, const char* bundle_dir, const char* framewo
     strcat(path, "/");
     strcat(path, program);
 
-    // Set permissions
-    if (chmod(path, 0755) != 0) {
-        perror("chmod failed");
-    }
-    else printf("Permissions changed successfully\n");
-
     // Arguments (argv[0] is conventionally the program name)
     char *args[] = { program, NULL };
+    int argc = 1;
 
     printf("Before execv...\n");
 
-    // Replace current process with /bin/ls
-    if (execv(path, args) == -1) {
-        perror("execv failed");
-    }
-
-    // This line is only reached if execv fails
-    printf("After execv (should not be printed if execv succeeds)\n");
+    void *h = dlopen(path, RTLD_NOW);
+    int (*main_entry)(int,char**) = (int(*)(int,char**)) dlsym(h, "main");
+    int rc = main_entry(argc, args);
 }
