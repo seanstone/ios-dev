@@ -15,3 +15,7 @@ clean-%:
 .PHONY: ipa
 ipa: all
 	$(MAKE) -C app ipa
+
+.PHONY: zsign
+zsign:
+	cd zsign/build/macos && make clean && make
