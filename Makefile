@@ -3,7 +3,10 @@ default: bin/libios-dev.a bin/hello
 
 include id.mk
 
-CC = $(CURDIR)/ios-cc
+export CC = $(CURDIR)/ios-cc
+# export CXX = $(CURDIR)/ios-cc
+export IOS_SHIMS_ENABLE = 1
+export IOS_SHIMS_DIR = $(CURDIR)/shims
 
 bin/libios-dev.a: build/app/app-main.c.o
 	mkdir -p $(@D)

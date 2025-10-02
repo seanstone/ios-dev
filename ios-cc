@@ -4,70 +4,113 @@ set -euo pipefail
 # --- Config / defaults ---
 SDK="${IOS_SDK:-$(xcrun --sdk iphoneos --show-sdk-path)}"
 CCBIN="${CCBIN:-clang}"
-DYLIB_NAME="${DYLIB_NAME:-a.out.dylib}"
+DYLIB_NAME="${DYLIB_NAME:-a.out.dylib}"   # used for install_name only
 
-# Codesign controls (env):
-#   CODESIGN_IDENTITY : explicit identity (e.g. "Apple Development: Name (TEAMID)")
-#   CODESIGN_ALLOWED  : YES/NO (default YES)
-#   ADHOC             : 1 to use ad-hoc (-s -) if no identity (useful for Simulator)
-#   CODESIGN_FLAGS    : extra flags (e.g. "--options runtime")
-#   ENTITLEMENTS      : path to an entitlements file (rare for dylibs; usually omit)
+# Generic iOS "unavailable" shims (optional)
+IOS_SHIMS_ENABLE="${IOS_SHIMS_ENABLE:-0}"     # set to 1 to activate shims
+IOS_SHIMS_DIR="${IOS_SHIMS_DIR:-}"            # folder containing ios_unavailable_shims.{h,c}
+
+# Codesign controls
 CODESIGN_ALLOWED="${CODESIGN_ALLOWED:-YES}"
 ADHOC="${ADHOC:-0}"
 CODESIGN_FLAGS="${CODESIGN_FLAGS:---timestamp=none --preserve-metadata=identifier,flags}"
+ENTITLEMENTS="${ENTITLEMENTS:-}"
 
-# Detect Simulator vs Device from SDK path (affects default to ad-hoc for Simulator)
+# Simulator vs Device detection
 if [[ "${SDK}" == *"iPhoneSimulator"* ]] || [[ "${SDK}" == *"iphonesimulator"* ]]; then
   IS_SIM=1
 else
   IS_SIM=0
 fi
 
-# --- Separate compile vs link, track output path ---
+# --- Parse args: detect compile vs link; capture -o output ---
 is_compile=0
 out_file=""
 prev=""
 for a in "$@"; do
-  if [[ "$a" == "-c" ]]; then is_compile=1; fi
-  if [[ "$prev" == "-o" ]]; then out_file="$a"; fi
+  [[ "$a" == "-c" ]] && is_compile=1
+  [[ "$prev" == "-o" ]] && out_file="$a"
   prev="$a"
 done
 
-# If linking and caller didn't give -o, we'll not guess; let clang decide.
-# (Most build systems pass -o; if not, codesigning will skip because no output path.)
-
+# --- Base compile flags ---
 BASE_CFLAGS=( -target arm64-apple-ios -isysroot "$SDK" -fPIC )
+
+# Optional: force-include shims header on compile steps
+if (( IOS_SHIMS_ENABLE )) && [[ -n "${IOS_SHIMS_DIR}" ]]; then
+  BASE_CFLAGS+=( -include "${IOS_SHIMS_DIR}/ios_unavailable_shims.h" )
+fi
+
+# Build ARGS from base flags + caller args
 ARGS=( "${BASE_CFLAGS[@]}" "$@" )
 
 if (( is_compile )); then
   exec "$CCBIN" "${ARGS[@]}"
 fi
 
-# --- LINK step: force a dylib and sensible install_name ---
-# If the caller already passed -dynamiclib/-install_name, we won't duplicate them.
-need_dynamiclib=1
-need_install_name=1
+# --- Link step: ALWAYS produce a dylib ---
+# Remove conflicting kind flags if caller added them (e.g., -bundle)
+FILTERED_ARGS=()
+skip_next=0
+prev=""
 for a in "$@"; do
-  [[ "$a" == "-dynamiclib" ]]     && need_dynamiclib=0
-  [[ "$a" == "-install_name" ]]   && need_install_name=0
+  if (( skip_next )); then
+    skip_next=0
+    prev="$a"
+    continue
+  fi
+  case "$a" in
+    -bundle)        ;;                         # drop
+    -shared)        ;;                         # drop (clang accepts -shared, but we force -dynamiclib)
+    -Wl,-pie|-pie)  ;;                         # drop (not for dylibs)
+    *) FILTERED_ARGS+=( "$a" );;
+  esac
+  prev="$a"
+done
+ARGS=( "${BASE_CFLAGS[@]}" "${FILTERED_ARGS[@]}" )
+
+# Add dylib flags; avoid duplicate -install_name if caller set it
+saw_install_name=0
+prev=""
+for a in "${FILTERED_ARGS[@]}"; do
+  [[ "$a" == "-install_name" ]] && saw_install_name=1
 done
 
-LINK_FLAGS=()
-(( need_dynamiclib ))   && LINK_FLAGS+=( -dynamiclib )
-(( need_install_name )) && LINK_FLAGS+=( -install_name "@rpath/${DYLIB_NAME}" )
+declare -a LINK_FLAGS=()
+LINK_FLAGS+=( -dynamiclib )
+if (( ! saw_install_name )); then
+  LINK_FLAGS+=( -install_name "@rpath/${DYLIB_NAME}" )
+fi
 LINK_FLAGS+=( -current_version 1.0 -compatibility_version 1.0 )
 
-# Perform the link
-"$CCBIN" "${ARGS[@]}" "${LINK_FLAGS[@]}"
+# If shims are enabled, compile the shim C once to a temp .o and inject it
+TMPDIR="${TMPDIR:-/tmp}"
+SHIM_OBJ=""
+if (( IOS_SHIMS_ENABLE )) && [[ -n "${IOS_SHIMS_DIR}" ]]; then
+  SHIM_C="${IOS_SHIMS_DIR}/ios_unavailable_shims.c"
+  SHIM_H="${IOS_SHIMS_DIR}/ios_unavailable_shims.h"
+  if [[ -f "$SHIM_C" && -f "$SHIM_H" ]]; then
+    SHIM_OBJ="${TMPDIR%/}/ios_unavailable_shims.o"
+    if [[ ! -f "$SHIM_OBJ" || "$SHIM_C" -nt "$SHIM_OBJ" || "$SHIM_H" -nt "$SHIM_OBJ" ]]; then
+      "$CCBIN" -target arm64-apple-ios -isysroot "$SDK" -fPIC -c "$SHIM_C" -o "$SHIM_OBJ"
+    fi
+  fi
+fi
 
-# --- Post-link codesign (only if allowed and we know the output path) ---
+# Perform the link (include shim object if present)
+if [[ -n "$SHIM_OBJ" && -f "$SHIM_OBJ" ]]; then
+  "$CCBIN" "${ARGS[@]}" "${LINK_FLAGS[@]}" "$SHIM_OBJ"
+else
+  "$CCBIN" "${ARGS[@]}" "${LINK_FLAGS[@]}"
+fi
+
+# --- Post-link codesign (when we know the output path) ---
 if [[ "${CODESIGN_ALLOWED}" == "YES" ]] && [[ -n "${out_file}" ]]; then
   if [[ -n "${CODESIGN_IDENTITY:-}" ]]; then
     /usr/bin/codesign --force --sign "${CODESIGN_IDENTITY}" ${CODESIGN_FLAGS} \
       ${ENTITLEMENTS:+--entitlements "$ENTITLEMENTS"} \
       "$out_file"
   else
-    # Default to ad-hoc on Simulator if no identity; otherwise sign only if ADHOC=1
     if (( IS_SIM )) || (( ADHOC )); then
       /usr/bin/codesign --force --sign - ${CODESIGN_FLAGS} \
         ${ENTITLEMENTS:+--entitlements "$ENTITLEMENTS"} \

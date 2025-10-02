@@ -161,7 +161,7 @@ void ios_main(const char* cache_dir, const char* bundle_dir, const char* framewo
 
     // Build source and destination paths
     char src[1024], dst[1024];
-    const char *program = "hello";
+    const char *program = "sqlite3";
     if (snprintf(src, sizeof(src), "%s/%s", bundle_dir, program) >= (int)sizeof(src) ||
         snprintf(dst, sizeof(dst), "%s/%s", cache_dir, program) >= (int)sizeof(dst)) {
         fprintf(stderr, "Path too long\n");
@@ -180,7 +180,12 @@ void ios_main(const char* cache_dir, const char* bundle_dir, const char* framewo
     list_dir(cache_dir);
 
     // argv[0] is program name
-    char *args[] = { (char*)program, NULL };
+    char *args[] = {
+        "sqlite3",
+        ":memory:",
+        "-cmd", "CREATE TABLE t(x); INSERT INTO t VALUES(123); SELECT * FROM t;",
+        NULL
+    };
 
     int rc = ios_execv(dst, args);
     if (rc < 0) {

@@ -8,12 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		A5331E102E8E98BA00B1767A /* libios-dev.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A5331E022E8E938900B1767A /* libios-dev.a */; };
+		A5B203B62E8EDF3400B25996 /* sqlite3 in Resources */ = {isa = PBXBuildFile; fileRef = A5B203B52E8EDF3400B25996 /* sqlite3 */; };
 		A5FC85472E8EB13600BF2346 /* hello in Resources */ = {isa = PBXBuildFile; fileRef = A5FC85462E8EB13600BF2346 /* hello */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		A5331E022E8E938900B1767A /* libios-dev.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libios-dev.a"; path = "../bin/libios-dev.a"; sourceTree = "<group>"; };
 		A56012C62E8E8C32001BBC51 /* ios-dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ios-dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A5B203B52E8EDF3400B25996 /* sqlite3 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = sqlite3; path = ../bin/sqlite3; sourceTree = "<group>"; };
 		A5FC85412E8EA3E000BF2346 /* hello */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = hello; path = ../bin/hello; sourceTree = "<group>"; };
 		A5FC85462E8EB13600BF2346 /* hello */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = hello; path = ../bin/hello; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -50,6 +52,7 @@
 		A56012BD2E8E8C32001BBC51 = {
 			isa = PBXGroup;
 			children = (
+				A5B203B52E8EDF3400B25996 /* sqlite3 */,
 				A5FC85462E8EB13600BF2346 /* hello */,
 				A56012C82E8E8C32001BBC51 /* ios-dev */,
 				A5331E012E8E938900B1767A /* Frameworks */,
@@ -129,6 +132,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A5B203B62E8EDF3400B25996 /* sqlite3 in Resources */,
 				A5FC85472E8EB13600BF2346 /* hello in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
