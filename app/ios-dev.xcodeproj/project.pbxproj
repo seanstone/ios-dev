@@ -7,21 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A5331E102E8E98BA00B1767A /* libios-env.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A5331E022E8E938900B1767A /* libios-env.a */; };
+		A5331E102E8E98BA00B1767A /* libios-dev.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A5331E022E8E938900B1767A /* libios-dev.a */; };
 		A5FC85472E8EB13600BF2346 /* hello in Resources */ = {isa = PBXBuildFile; fileRef = A5FC85462E8EB13600BF2346 /* hello */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A5331E022E8E938900B1767A /* libios-env.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libios-env.a"; path = "../bin/libios-env.a"; sourceTree = "<group>"; };
-		A56012C62E8E8C32001BBC51 /* ios-env.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ios-env.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A5331E022E8E938900B1767A /* libios-dev.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libios-dev.a"; path = "../bin/libios-dev.a"; sourceTree = "<group>"; };
+		A56012C62E8E8C32001BBC51 /* ios-dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ios-dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5FC85412E8EA3E000BF2346 /* hello */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = hello; path = ../bin/hello; sourceTree = "<group>"; };
 		A5FC85462E8EB13600BF2346 /* hello */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = hello; path = ../bin/hello; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		A56012C82E8E8C32001BBC51 /* ios-env */ = {
+		A56012C82E8E8C32001BBC51 /* ios-dev */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "ios-env";
+			path = "ios-dev";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -31,7 +31,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A5331E102E8E98BA00B1767A /* libios-env.a in Frameworks */,
+				A5331E102E8E98BA00B1767A /* libios-dev.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -42,7 +42,7 @@
 			isa = PBXGroup;
 			children = (
 				A5FC85412E8EA3E000BF2346 /* hello */,
-				A5331E022E8E938900B1767A /* libios-env.a */,
+				A5331E022E8E938900B1767A /* libios-dev.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -51,7 +51,7 @@
 			isa = PBXGroup;
 			children = (
 				A5FC85462E8EB13600BF2346 /* hello */,
-				A56012C82E8E8C32001BBC51 /* ios-env */,
+				A56012C82E8E8C32001BBC51 /* ios-dev */,
 				A5331E012E8E938900B1767A /* Frameworks */,
 				A56012C72E8E8C32001BBC51 /* Products */,
 			);
@@ -60,7 +60,7 @@
 		A56012C72E8E8C32001BBC51 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A56012C62E8E8C32001BBC51 /* ios-env.app */,
+				A56012C62E8E8C32001BBC51 /* ios-dev.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -68,9 +68,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A56012C52E8E8C32001BBC51 /* ios-env */ = {
+		A56012C52E8E8C32001BBC51 /* ios-dev */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A56012D12E8E8C36001BBC51 /* Build configuration list for PBXNativeTarget "ios-env" */;
+			buildConfigurationList = A56012D12E8E8C36001BBC51 /* Build configuration list for PBXNativeTarget "ios-dev" */;
 			buildPhases = (
 				A56012C22E8E8C32001BBC51 /* Sources */,
 				A56012C32E8E8C32001BBC51 /* Frameworks */,
@@ -81,13 +81,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				A56012C82E8E8C32001BBC51 /* ios-env */,
+				A56012C82E8E8C32001BBC51 /* ios-dev */,
 			);
-			name = "ios-env";
+			name = "ios-dev";
 			packageProductDependencies = (
 			);
-			productName = "ios-env";
-			productReference = A56012C62E8E8C32001BBC51 /* ios-env.app */;
+			productName = "ios-dev";
+			productReference = A56012C62E8E8C32001BBC51 /* ios-dev.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -119,7 +119,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A56012C52E8E8C32001BBC51 /* ios-env */,
+				A56012C52E8E8C32001BBC51 /* ios-dev */,
 			);
 		};
 /* End PBXProject section */
@@ -289,7 +289,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../bin";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "tw.ensh.ios-env";
+				PRODUCT_BUNDLE_IDENTIFIER = "tw.ensh.ios-dev";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -325,7 +325,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../bin";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "tw.ensh.ios-env";
+				PRODUCT_BUNDLE_IDENTIFIER = "tw.ensh.ios-dev";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -351,7 +351,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A56012D12E8E8C36001BBC51 /* Build configuration list for PBXNativeTarget "ios-env" */ = {
+		A56012D12E8E8C36001BBC51 /* Build configuration list for PBXNativeTarget "ios-dev" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A56012D22E8E8C36001BBC51 /* Debug */,
