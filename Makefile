@@ -1,7 +1,7 @@
 .PHONY: default
 default: bin/libios-env.a bin/hello
 
-ID = "Apple Development: En Shih (8JAX23HR7H)"
+include id.mk
 
 IOS_SDK = "$(shell xcrun --sdk iphoneos --show-sdk-path)"
 
