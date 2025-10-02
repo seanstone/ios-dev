@@ -161,7 +161,7 @@ void ios_main(const char* cache_dir, const char* bundle_dir, const char* framewo
 
     // Build source and destination paths
     char src[1024], dst[1024];
-    const char *program = "gcat";
+    const char *program = "zsign";
     if (snprintf(src, sizeof(src), "%s/bin/%s", bundle_dir, program) >= (int)sizeof(src) ||
         snprintf(dst, sizeof(dst), "%s/%s", cache_dir, program) >= (int)sizeof(dst)) {
         fprintf(stderr, "Path too long\n");
@@ -171,22 +171,22 @@ void ios_main(const char* cache_dir, const char* bundle_dir, const char* framewo
     list_dir(bundle_dir);
 
     // Copy program
-    if (copy_file(src, dst) != 0) {
-        fprintf(stderr, "Failed to copy %s to cache\n", program);
-        return;
-    }
-    printf("Copied %s to %s\n", src, dst);
+    // if (copy_file(src, dst) != 0) {
+    //     fprintf(stderr, "Failed to copy %s to cache\n", program);
+    //     return;
+    // }
+    // printf("Copied %s to %s\n", src, dst);
 
-    list_dir(cache_dir);
+    // list_dir(cache_dir);
 
     // argv[0] is program name
     char *args[] = {
-        "gcat",
-        "--version",
+        "zsign",
+        "-v",
         NULL
     };
 
-    int rc = ios_execv(dst, args);
+    int rc = ios_execv(src, args);
     if (rc < 0) {
         fprintf(stderr, "ios_execv failed with code %d for '%s'\n", rc, dst);
     } else {
