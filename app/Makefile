@@ -3,7 +3,7 @@ default: bin/libios-dev.a ../user/bin/libsyslog_extsn_shim.dylib
 
 SDK = $(shell xcrun --sdk iphoneos --show-sdk-path)
 
-bin/libios-dev.a: build/app-main.c.o build/ios_vchild.c.o build/demo.c.o
+bin/libios-dev.a: build/app-main.c.o build/ios_vchild.c.o
 	mkdir -p $(@D)
 	ar rcs $@ $^
 
