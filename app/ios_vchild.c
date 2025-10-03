@@ -45,17 +45,69 @@ typedef struct {
     void *user;
 } vctx_t;
 
+// Top of ios_vchild.c
+typedef struct {
+    int fd;
+    ios_pump_cb cb;
+    void *user;
+} pump_arg_t;
+
 static void *pump_thread(void *arg) {
-    struct { int fd; ios_pump_cb cb; void *user; } *p = arg;
+    pump_arg_t *p = (pump_arg_t*)arg;
     char buf[4096];
     for (;;) {
         ssize_t r = read(p->fd, buf, sizeof(buf));
         if (r > 0) { if (p->cb) p->cb(buf, (size_t)r, p->user); }
         else if (r == 0) break;                 // EOF
         else if (errno == EINTR) continue;      // retry
-        else break;                             
+        else break;
     }
     return NULL;
+}
+
+static void *pump_trampoline(void *arg) {
+    pump_arg_t *pa = (pump_arg_t*)arg;
+    void *ret = pump_thread(pa);
+    free(pa);                   // free only AFTER the thread finishes its loop
+    return ret;
+}
+
+int ios_vchild_start_pumps(ios_child_t *child,
+                           ios_pump_cb on_stdout,
+                           ios_pump_cb on_stderr,
+                           void *user) {
+    if (!child) { errno = EINVAL; return -1; }
+    if (child->pumps_running) return 0;
+
+    pump_arg_t *ao = (pump_arg_t*)malloc(sizeof(*ao));
+    pump_arg_t *ae = (pump_arg_t*)malloc(sizeof(*ae));
+    if (!ao || !ae) { free(ao); free(ae); errno = ENOMEM; return -1; }
+
+    ao->fd = child->stdout_fd; ao->cb = on_stdout; ao->user = user;
+    ae->fd = child->stderr_fd; ae->cb = on_stderr; ae->user = user;
+
+    int perr = pthread_create(&child->pump_out_th, NULL, pump_trampoline, ao);
+    if (perr) { free(ao); free(ae); errno = perr; return -1; }
+
+    perr = pthread_create(&child->pump_err_th, NULL, pump_trampoline, ae);
+    if (perr) {
+        // If second create fails, join the first to avoid orphan + double free
+        pthread_join(child->pump_out_th, NULL);
+        free(ae);
+        errno = perr;
+        return -1;
+    }
+
+    child->pumps_running = 1;
+    return 0;
+}
+
+int ios_vchild_stop_pumps(ios_child_t *child) {
+    if (!child || !child->pumps_running) return 0;
+    pthread_join(child->pump_out_th, NULL);
+    pthread_join(child->pump_err_th, NULL);
+    child->pumps_running = 0;
+    return 0;
 }
 
 static void *child_thread_main(void *arg) {
@@ -85,7 +137,6 @@ static void *child_thread_main(void *arg) {
     pthread_mutex_unlock(&vc->mtx);
 
     // Close ends the child thread doesn't need
-    close(vc->in_w);
     close(vc->out_r);
     close(vc->err_r);
 
@@ -219,54 +270,4 @@ void ios_close_vchild(ios_child_t *child) {
     if (child->stdin_fd  >= 0) { close(child->stdin_fd);  child->stdin_fd  = -1; }
     if (child->stdout_fd >= 0) { close(child->stdout_fd); child->stdout_fd = -1; }
     if (child->stderr_fd >= 0) { close(child->stderr_fd); child->stderr_fd = -1; }
-}
-
-// ---- pumps ----
-typedef struct {
-    int fd;
-    ios_pump_cb cb;
-    void *user;
-} pump_arg_t;
-
-static void *pump_trampoline(void *arg) {
-    pump_arg_t *pa = (pump_arg_t*)arg;
-    pump_thread(pa);
-    free(pa);
-    return NULL;
-}
-
-int ios_vchild_start_pumps(ios_child_t *child,
-                           ios_pump_cb on_stdout,
-                           ios_pump_cb on_stderr,
-                           void *user) {
-    if (!child) { errno = EINVAL; return -1; }
-    if (child->pumps_running) return 0;
-
-    // stdout pump
-    pump_arg_t *ao = malloc(sizeof(*ao));
-    if (!ao) return -1;
-    ao->fd = child->stdout_fd; ao->cb = on_stdout; ao->user = user;
-
-    int perr = pthread_create(&child->pump_out_th, NULL, pump_trampoline, ao);
-    if (perr) { free(ao); errno = perr; return -1; }
-
-    // stderr pump
-    pump_arg_t *ae = malloc(sizeof(*ae));
-    if (!ae) { /* cancel previous */ pthread_cancel(child->pump_out_th); return -1; }
-    ae->fd = child->stderr_fd; ae->cb = on_stderr; ae->user = user;
-
-    perr = pthread_create(&child->pump_err_th, NULL, pump_trampoline, ae);
-    if (perr) { free(ae); pthread_cancel(child->pump_out_th); errno = perr; return -1; }
-
-    child->pumps_running = 1;
-    return 0;
-}
-
-int ios_vchild_stop_pumps(ios_child_t *child) {
-    if (!child || !child->pumps_running) return 0;
-    // Joining; pumps exit on EOF when child closes its ends or when parent closes fds.
-    pthread_join(child->pump_out_th, NULL);
-    pthread_join(child->pump_err_th, NULL);
-    child->pumps_running = 0;
-    return 0;
 }
