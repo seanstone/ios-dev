@@ -23,41 +23,41 @@ mv ./user/bin/libminizip.1.dylib.1 ./user/bin/libminizip.1.dylib
 
 install_name_tool -change \
   /opt/homebrew/opt/openssl@3/lib/libssl.3.dylib \
-  @loader_path/libssl.3.dylib \
+  @rpath/libssl.3.dylib \
   ./user/bin/zsign
 
 install_name_tool -change \
   /opt/homebrew/opt/openssl@3/lib/libcrypto.3.dylib \
-  @loader_path/libcrypto.3.dylib \
+  @rpath/libcrypto.3.dylib \
   ./user/bin/zsign
 
 install_name_tool -change \
   /opt/homebrew/opt/minizip/lib/libminizip.1.dylib \
-  @loader_path/libminizip.1.dylib \
+  @rpath/libminizip.1.dylib \
   ./user/bin/zsign
 
 install_name_tool -change \
   /opt/homebrew/opt/openssl@3/lib/libcrypto.3.dylib \
-  @loader_path/libcrypto.3.dylib \
+  @rpath/libcrypto.3.dylib \
   ./user/bin/libcrypto.3.dylib
 
 install_name_tool -change \
   /opt/homebrew/opt/openssl@3/lib/libssl.3.dylib \
-  @loader_path/libssl.3.dylib \
+  @rpath/libssl.3.dylib \
   ./user/bin/libssl.3.dylib
 
 install_name_tool -change \
   /opt/homebrew/Cellar/openssl@3/3.5.4/lib/libcrypto.3.dylib \
-  @loader_path/libcrypto.3.dylib \
+  @rpath/libcrypto.3.dylib \
   ./user/bin/libssl.3.dylib
 
 install_name_tool -change \
   /opt/homebrew/opt/minizip/lib/libminizip.1.dylib \
-  @loader_path/libminizip.1.dylib \
+  @rpath/libminizip.1.dylib \
   ./user/bin/libminizip.1.dylib
 
 install_name_tool -change /usr/lib/libSystem.B.dylib \
-  @loader_path/libsyslog_extsn_shim.dylib \
+  @rpath/libsyslog_extsn_shim.dylib \
   ./user/bin/libcrypto.3.dylib
 
 codesign --force --sign "Apple Development: En Shih (8JAX23HR7H)" \
