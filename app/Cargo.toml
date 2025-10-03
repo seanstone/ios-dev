@@ -1,0 +1,12 @@
+[package]
+name = "ios_dev"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "ios_dev"
+crate-type = ["staticlib"]
+
+[dependencies]
+libloading = "0.8"
+libc = "0.2"

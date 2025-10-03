@@ -7,14 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A5331E102E8E98BA00B1767A /* libios-dev.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A5331E022E8E938900B1767A /* libios-dev.a */; };
 		A5B203BE2E8EF14600B25996 /* bin in Resources */ = {isa = PBXBuildFile; fileRef = A5B203BD2E8EF14600B25996 /* bin */; };
+		A5B203C82E904D9500B25996 /* libios_dev.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A5B203C72E904D6B00B25996 /* libios_dev.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		A5331E022E8E938900B1767A /* libios-dev.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libios-dev.a"; path = "../bin/libios-dev.a"; sourceTree = "<group>"; };
 		A56012C62E8E8C32001BBC51 /* ios-dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ios-dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5B203BD2E8EF14600B25996 /* bin */ = {isa = PBXFileReference; lastKnownFileType = folder; name = bin; path = ../user/bin; sourceTree = "<group>"; };
+		A5B203C72E904D6B00B25996 /* libios_dev.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libios_dev.a; path = "target/aarch64-apple-ios/release/libios_dev.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -30,7 +31,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A5331E102E8E98BA00B1767A /* libios-dev.a in Frameworks */,
+				A5B203C82E904D9500B25996 /* libios_dev.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -40,6 +41,7 @@
 		A5331E012E8E938900B1767A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A5B203C72E904D6B00B25996 /* libios_dev.a */,
 				A5331E022E8E938900B1767A /* libios-dev.a */,
 			);
 			name = Frameworks;
@@ -286,7 +288,10 @@
 					"@executable_path/Frameworks",
 					"@loader_path/bin",
 				);
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/bin";
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/bin",
+					"$(PROJECT_DIR)/target/aarch64-apple-ios/release",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "tw.ensh.ios-dev";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -323,7 +328,10 @@
 					"@executable_path/Frameworks",
 					"@loader_path/bin",
 				);
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/bin";
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/bin",
+					"$(PROJECT_DIR)/target/aarch64-apple-ios/release",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "tw.ensh.ios-dev";
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -1,15 +1,11 @@
 .PHONY: default
-default: bin/libios-dev.a ../user/bin/libsyslog_extsn_shim.dylib
+default: ios-lib ../user/bin/libsyslog_extsn_shim.dylib
+
+.PHONY: ios-lib
+ios-lib:
+	cargo build --lib --profile release --target=aarch64-apple-ios
 
 SDK = $(shell xcrun --sdk iphoneos --show-sdk-path)
-
-bin/libios-dev.a: build/app-main.c.o build/ios_vchild.c.o
-	mkdir -p $(@D)
-	ar rcs $@ $^
-
-build/%.c.o: %.c
-	mkdir -p $(@D)
-	clang -target arm64-apple-ios -isysroot $(SDK) -c $< -o $@
 
 ../user/bin/libsyslog_extsn_shim.dylib: syslog_extsn_shim.c
 	mkdir -p $(@D)
@@ -35,4 +31,4 @@ app/export/ios-dev.ipa: app/ios-dev.xcarchive
 
 .PHONY: clean
 clean:
-	rm -rf bin build *.xcarchive export
+	rm -rf bin build target *.xcarchive export

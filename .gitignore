@@ -7,3 +7,5 @@ export/
 *.zip
 sqlite-amalgamation-*
 build/
+target/
+Cargo.lock
