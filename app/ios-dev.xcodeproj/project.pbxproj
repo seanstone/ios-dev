@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		A5B203BE2E8EF14600B25996 /* bin in Resources */ = {isa = PBXBuildFile; fileRef = A5B203BD2E8EF14600B25996 /* bin */; };
 		A5B203C82E904D9500B25996 /* libios_dev.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A5B203C72E904D6B00B25996 /* libios_dev.a */; };
+		A5B203D22E9054D400B25996 /* lib in Resources */ = {isa = PBXBuildFile; fileRef = A5B203D12E9054D400B25996 /* lib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -16,6 +17,7 @@
 		A56012C62E8E8C32001BBC51 /* ios-dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ios-dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5B203BD2E8EF14600B25996 /* bin */ = {isa = PBXFileReference; lastKnownFileType = folder; name = bin; path = ../user/bin; sourceTree = "<group>"; };
 		A5B203C72E904D6B00B25996 /* libios_dev.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libios_dev.a; path = "target/aarch64-apple-ios/release/libios_dev.a"; sourceTree = "<group>"; };
+		A5B203D12E9054D400B25996 /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = ../user/lib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -50,6 +52,7 @@
 		A56012BD2E8E8C32001BBC51 = {
 			isa = PBXGroup;
 			children = (
+				A5B203D12E9054D400B25996 /* lib */,
 				A5B203BD2E8EF14600B25996 /* bin */,
 				A56012C82E8E8C32001BBC51 /* ios-dev */,
 				A5331E012E8E938900B1767A /* Frameworks */,
@@ -129,6 +132,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A5B203D22E9054D400B25996 /* lib in Resources */,
 				A5B203BE2E8EF14600B25996 /* bin in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -286,7 +290,7 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
-					"@loader_path/bin",
+					"@loader_path/lib",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/bin",
@@ -326,7 +330,7 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
-					"@loader_path/bin",
+					"@loader_path/lib",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/bin",

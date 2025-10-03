@@ -9,3 +9,4 @@ sqlite-amalgamation-*
 build/
 target/
 Cargo.lock
+lib/
