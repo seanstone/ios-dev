@@ -6,6 +6,7 @@
 #include <unistd.h>    // read, write, close
 #include <sys/stat.h>  // stat, fchmod
 #include <dlfcn.h>     // dlopen, dlsym, dlerror, dlclose
+#include <signal.h>
 
 static void print_permissions(mode_t mode)
 {
@@ -155,13 +156,15 @@ static int list_dir(const char *target_dir)
     return 0;
 }
 
+int demo_main(const char* program_dir);
+
 void ios_main(const char* cache_dir, const char* bundle_dir, const char* frameworks_dir)
 {
     (void)frameworks_dir;
 
     // Build source and destination paths
     char src[1024], dst[1024];
-    const char *program = "zsign";
+    const char *program = "sqlite3";
     if (snprintf(src, sizeof(src), "%s/bin/%s", bundle_dir, program) >= (int)sizeof(src) ||
         snprintf(dst, sizeof(dst), "%s/%s", cache_dir, program) >= (int)sizeof(dst)) {
         fprintf(stderr, "Path too long\n");
@@ -181,8 +184,8 @@ void ios_main(const char* cache_dir, const char* bundle_dir, const char* framewo
 
     // argv[0] is program name
     char *args[] = {
-        "zsign",
-        "-v",
+        "sqlite3",
+        "--version",
         NULL
     };
 
@@ -192,4 +195,6 @@ void ios_main(const char* cache_dir, const char* bundle_dir, const char* framewo
     } else {
         printf("Program '%s' returned %d\n", program, rc);
     }
+
+    int res = demo_main(src);
 }
