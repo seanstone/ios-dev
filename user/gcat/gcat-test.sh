@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ../../toolchain/patch_macho.py /opt/homebrew/bin/gcat ../bin/gcat
-../../toolchain/patch_to_ios.py ./user/bin/gcat -o ../bin/gcat
+../../toolchain/patch_to_ios.py ../bin/gcat -o ../bin/gcat
 
 # Patch CoreServices
 install_name_tool -change \

@@ -288,9 +288,8 @@ impl IosChild {
 fn demo_main(program_dylib: &CStr) -> i32 {
     // argv: sqlite3 -interactive :memory:
     let argv = [
-        CStr::from_bytes_with_nul(b"sqlite3\0").unwrap(),
-        CStr::from_bytes_with_nul(b"-interactive\0").unwrap(),
-        CStr::from_bytes_with_nul(b":memory:\0").unwrap(),
+        CStr::from_bytes_with_nul(b"bash\0").unwrap(),
+        // CStr::from_bytes_with_nul(b"--version\0").unwrap(),
     ];
 
     let child = unsafe { IosChild::spawn(program_dylib, &argv) };
@@ -315,13 +314,13 @@ fn demo_main(program_dylib: &CStr) -> i32 {
     );
 
     // Send the same script as your C demo
-    let _ = child.write_all(".print PIPE_OK\n");
-    let _ = child.write_all(".echo on\n.print OK\n.echo off\n");
-    let _ = child.write_all(".mode line\n");
-    let _ = child.write_all("select 2*3 as v;\n");
-    let _ = child.write_all("create table t(x); insert into t values(42);\n");
-    let _ = child.write_all("select * from t;\n");
-    let _ = child.write_all(".quit\n");
+    // let _ = child.write_all(".print PIPE_OK\n");
+    // let _ = child.write_all(".echo on\n.print OK\n.echo off\n");
+    // let _ = child.write_all(".mode line\n");
+    // let _ = child.write_all("select 2*3 as v;\n");
+    // let _ = child.write_all("create table t(x); insert into t values(42);\n");
+    // let _ = child.write_all("select * from t;\n");
+    // let _ = child.write_all(".quit\n");
 
     // Close stdin so sqlite can exit cleanly
     unsafe {
@@ -333,6 +332,15 @@ fn demo_main(program_dylib: &CStr) -> i32 {
     let code = child.wait();
     eprintln!("(child exit={code})");
     code
+}
+
+use std::io::{stdin, stdout, Write};
+
+fn pause() {
+    let mut stdout = stdout();
+    stdout.write(b"Press Enter to continue...").unwrap();
+    stdout.flush().unwrap();
+    stdin().read(&mut [0]).unwrap();
 }
 
 // ---------- C ABI entry point ----------
@@ -351,10 +359,10 @@ pub extern "C" fn ios_main(
         CStr::from_ptr(bundle_dir)
     };
 
-    // Build "<bundle>/bin/sqlite3"
+    // Build "<bundle>/bin/bash"
     let mut path = String::new();
     path.push_str(bundle.to_string_lossy().as_ref());
-    path.push_str("/bin/sqlite3");
+    path.push_str("/bin/bash");
 
     let c_path = match CString::new(path) {
         Ok(s) => s,
@@ -365,4 +373,6 @@ pub extern "C" fn ios_main(
     };
 
     let _ = demo_main(&c_path);
+
+    pause();
 }
