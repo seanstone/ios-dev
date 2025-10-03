@@ -1,5 +1,5 @@
 .PHONY: all
-all: build-hello build-sqlite
+all: build-hello build-sqlite build-gcat
 
 .PHONY: build-%
 build-%:
