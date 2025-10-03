@@ -15,6 +15,7 @@ build/%.c.o: %.c
 	mkdir -p $(@D)
 	xcrun clang -target arm64-apple-ios -isysroot $(SDK) \
 		-dynamiclib -fvisibility=default \
+		-Wl,-reexport_library,/usr/lib/libSystem.B.dylib \
 		-install_name @rpath/libsyslog_extsn_shim.dylib \
 		-o $@ $<
 	codesign --force --sign "Apple Development: En Shih (8JAX23HR7H)" \

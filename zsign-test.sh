@@ -19,7 +19,7 @@ mv ./user/bin/libminizip.1.dylib.1 ./user/bin/libminizip.1.dylib
 
 ./toolchain/patch_macho.py ./zsign/bin/zsign ./user/bin/zsign
 ./toolchain/patch_to_ios.py ./user/bin/zsign -o ./user/bin/zsign
-./toolchain/patch_add_syslog_shim.py ./user/bin/libcrypto.3.dylib ./user/bin/libcrypto.3.dylib
+#./toolchain/patch_add_syslog_shim.py ./user/bin/libcrypto.3.dylib ./user/bin/libcrypto.3.dylib
 
 install_name_tool -change \
   /opt/homebrew/opt/openssl@3/lib/libssl.3.dylib \
@@ -55,6 +55,10 @@ install_name_tool -change \
   /opt/homebrew/opt/minizip/lib/libminizip.1.dylib \
   @loader_path/libminizip.1.dylib \
   ./user/bin/libminizip.1.dylib
+
+install_name_tool -change /usr/lib/libSystem.B.dylib \
+  @loader_path/libsyslog_extsn_shim.dylib \
+  ./user/bin/libcrypto.3.dylib
 
 codesign --force --sign "Apple Development: En Shih (8JAX23HR7H)" \
     --options runtime \
