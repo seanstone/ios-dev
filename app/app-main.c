@@ -171,7 +171,7 @@ void ios_main(const char* cache_dir, const char* bundle_dir, const char* framewo
         return;
     }
 
-    list_dir(bundle_dir);
+    // list_dir(bundle_dir);
 
     // Copy program
     // if (copy_file(src, dst) != 0) {
@@ -183,18 +183,20 @@ void ios_main(const char* cache_dir, const char* bundle_dir, const char* framewo
     // list_dir(cache_dir);
 
     // argv[0] is program name
-    char *args[] = {
-        "sqlite3",
-        "--version",
-        NULL
-    };
+    // char *args[] = {
+    //     "sqlite3",
+    //     "--version",
+    //     NULL
+    // };
 
-    int rc = ios_execv(src, args);
-    if (rc < 0) {
-        fprintf(stderr, "ios_execv failed with code %d for '%s'\n", rc, dst);
-    } else {
-        printf("Program '%s' returned %d\n", program, rc);
-    }
+    // int rc = ios_execv(src, args);
+    // if (rc < 0) {
+    //     fprintf(stderr, "ios_execv failed with code %d for '%s'\n", rc, dst);
+    // } else {
+    //     printf("Program '%s' returned %d\n", program, rc);
+    // }
 
     int res = demo_main(src);
+
+    //pause();
 }
