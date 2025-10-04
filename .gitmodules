@@ -1,3 +1,6 @@
 [submodule "zsign"]
 	path = user/zsign/zsign
 	url = https://github.com/zhlynn/zsign.git
+[submodule "app/fishhook"]
+	path = app/fishhook
+	url = https://github.com/facebook/fishhook.git
