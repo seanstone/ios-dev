@@ -9,7 +9,7 @@ SDK = $(shell xcrun --sdk iphoneos --show-sdk-path)
 
 lib/libfishhook.a: fishhook/fishhook.c
 	mkdir -p build
-	clang -target arm64-apple-ios -isysroot $(SDK) -Ifishhook -c $< -o build/fishhook.o
+	clang -target arm64-apple-ios -isysroot $(SDK) -Ifishhook -DFISHHOOK_EXPORT -c $< -o build/fishhook.o
 	mkdir -p $(@D)
 	ar rcs $@ build/fishhook.o
 
