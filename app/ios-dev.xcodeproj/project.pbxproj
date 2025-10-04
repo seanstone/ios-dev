@@ -18,6 +18,7 @@
 		A5B203BD2E8EF14600B25996 /* bin */ = {isa = PBXFileReference; lastKnownFileType = folder; name = bin; path = ../user/bin; sourceTree = "<group>"; };
 		A5B203C72E904D6B00B25996 /* libios_dev.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libios_dev.a; path = "target/aarch64-apple-ios/release/libios_dev.a"; sourceTree = "<group>"; };
 		A5B203D12E9054D400B25996 /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = ../user/lib; sourceTree = "<group>"; };
+		A5B203D32E90F1A100B25996 /* libfishhook.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfishhook.a; path = lib/libfishhook.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -43,6 +44,7 @@
 		A5331E012E8E938900B1767A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A5B203D32E90F1A100B25996 /* libfishhook.a */,
 				A5B203C72E904D6B00B25996 /* libios_dev.a */,
 				A5331E022E8E938900B1767A /* libios-dev.a */,
 			);

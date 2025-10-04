@@ -289,7 +289,7 @@ fn demo_main(program_dylib: &CStr) -> i32 {
     // argv: sqlite3 -interactive :memory:
     let argv = [
         CStr::from_bytes_with_nul(b"bash\0").unwrap(),
-        // CStr::from_bytes_with_nul(b"--version\0").unwrap(),
+        CStr::from_bytes_with_nul(b"--version\0").unwrap(),
     ];
 
     let child = unsafe { IosChild::spawn(program_dylib, &argv) };

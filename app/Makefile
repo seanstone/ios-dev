@@ -1,11 +1,17 @@
 .PHONY: default
-default: ios-lib ../user/bin/libsyslog_extsn_shim.dylib
+default: ios-lib lib/libfishhook.a ../user/bin/libsyslog_extsn_shim.dylib
 
 .PHONY: ios-lib
 ios-lib:
 	cargo build --lib --profile release --target=aarch64-apple-ios
 
 SDK = $(shell xcrun --sdk iphoneos --show-sdk-path)
+
+lib/libfishhook.a: fishhook/fishhook.c
+	mkdir -p build
+	clang -target arm64-apple-ios -isysroot $(SDK) -Ifishhook -c $< -o build/fishhook.o
+	mkdir -p $(@D)
+	ar rcs $@ build/fishhook.o
 
 ../user/bin/libsyslog_extsn_shim.dylib: syslog_extsn_shim.c
 	mkdir -p $(@D)
