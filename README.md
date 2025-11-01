@@ -9,3 +9,6 @@
 * https://github.com/utmapp/UTM.git
 * https://github.com/holzschu/ios_system.git
 * https://github.com/tobefuturer/app2dylib
+* https://github.com/SamoZ256/Undercover
+* https://github.com/SamoZ256/Flask
+* https://github.com/SamoZ256/Tequila
